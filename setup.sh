@@ -34,7 +34,8 @@ if [ ! -f ~/Library/Fonts/Menlo\ for\ Powerline.ttf ]; then
 fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+    chsh -s /bin/zsh
 else
     exec ${SHELL} -l
 fi
