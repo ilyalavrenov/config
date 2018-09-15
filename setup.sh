@@ -18,10 +18,6 @@ if [ -f Brewfile ]; then
     brew bundle install
 fi
 
-if [ ! -d ~/.oh-my-zsh ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-fi
-
 if [ -f .aliases ]; then
     ln -sf .aliases ~/.aliases
 fi
@@ -37,4 +33,8 @@ if [ ! -f ~/Library/Fonts/Menlo\ for\ Powerline.ttf ]; then
     rm -rf fonts*
 fi
 
-exec ${SHELL} -l
+if [ ! -d ~/.oh-my-zsh ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+else
+    exec ${SHELL} -l
+fi
