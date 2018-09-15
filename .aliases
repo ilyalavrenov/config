@@ -1,0 +1,28 @@
+alias afk='open -a ScreenSaverEngine'
+alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
+alias copyssh='pbcopy < ~/.ssh/id_rsa.pub'
+alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
+alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias path='echo $PATH'
+alias reload='exec ${SHELL} -l'
+alias venv='virtualenv -p python3 venv && source venv/bin/activate'
+
+alias dcu='docker-compose up'
+alias dcd='docker-compose down'
+alias dcb='docker-compose build'
+
+awscreds() {
+    if [ -z "$1" ]
+    then
+        echo "AWS creds currently set to $(readlink ~/.aws/credentials)"
+    else
+        ln -sf ~/.aws/credentials.$1 ~/.aws/credentials
+        echo "AWS creds symlinked to $(readlink ~/.aws/credentials)"
+    fi
+}
+
+cfpurge() {
+    dist_id=$(aws cloudfront list-distributions | jq -r '.[]["Items"][] | select(.Aliases.Items[]=='\"$1\"') | .Id')
+    [[ -z "$dist_id" ]] && echo "unable to find CF distribution with alias '$1'" && return 1 || echo "found CF distribution with ID $dist_id, purging cache..."
+    aws cloudfront create-invalidation --distribution-id $dist_id --paths '/*' | jq
+}
