@@ -19,11 +19,11 @@ if [ -f Brewfile ]; then
 fi
 
 if [ -f .aliases ]; then
-    ln -sf .aliases ~/.aliases
+    ln -sf $(pwd)/.aliases ~/.aliases
 fi
 
 if [ -f .zshrc ]; then
-    ln -sf .zshrc ~/.zshrc
+    ln -sf $(pwd)/.zshrc ~/.zshrc
 fi
 
 if [ ! -f ~/Library/Fonts/Menlo\ for\ Powerline.ttf ]; then
