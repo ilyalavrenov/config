@@ -6,6 +6,7 @@ alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias path='echo $PATH'
 alias reload='exec ${SHELL} -l'
 alias venv='virtualenv -p python3 venv && source venv/bin/activate'
+alias venv2='virtualenv -p python2 venv && source venv/bin/activate'
 
 alias dcu='docker-compose up'
 alias dcd='docker-compose down'
@@ -25,4 +26,10 @@ cfpurge() {
     dist_id=$(aws cloudfront list-distributions | jq -r '.[]["Items"][] | select(.Aliases.Items[]=='\"$1\"') | .Id')
     [[ -z "$dist_id" ]] && echo "unable to find CF distribution with alias '$1'" && return 1 || echo "found CF distribution with ID $dist_id, purging cache..."
     aws cloudfront create-invalidation --distribution-id $dist_id --paths '/*' | jq
+}
+
+genpasswd() {
+    if [ -z "$1" ]; then length=16; else length=$1; fi    
+    LC_CTYPE=C
+    tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${length} | xargs 
 }
