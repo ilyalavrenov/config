@@ -1,5 +1,5 @@
 alias afk='open -a ScreenSaverEngine'
-alias brewup='brew update; brew upgrade; brew prune; brew cleanup; brew doctor'
+alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
 alias copyssh='pbcopy < ~/.ssh/id_rsa.pub'
 alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
