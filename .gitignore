@@ -1,0 +1,15 @@
+.vscode/*
+**.tfstate*
+venv
+*.log
+*.sqlite
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+*.dmg
+*.gz
+*.rar
+*.tar
+*.tar.gz
+*.zip

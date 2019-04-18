@@ -1,9 +1,12 @@
+alias ll='ls -FGlAhp'
+alias rm='rm -i'
+
 alias afk='open -a ScreenSaverEngine'
 alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
 alias copyssh='pbcopy < ~/.ssh/id_rsa.pub'
 alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
-alias path='echo $PATH'
+alias path='echo -e ${PATH//:/\\n}' 
 alias reload='exec ${SHELL} -l'
 alias venv='virtualenv -p python3 venv && source venv/bin/activate'
 alias venv2='virtualenv -p python2 venv && source venv/bin/activate'
