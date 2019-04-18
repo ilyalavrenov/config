@@ -1,5 +1,7 @@
 export ZSH=$HOME/.oh-my-zsh
+
 ZSH_THEME="agnoster"
+
 plugins=(
     aws
     docker
@@ -7,15 +9,17 @@ plugins=(
     osx
     terraform
 )
-source $ZSH/oh-my-zsh.sh
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+sources=(
+    $ZSH/oh-my-zsh.sh
+    /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    ~/.aliases
+    ~/.localrc
+    ~/.fzf.zsh
+)
+
+for file in ${sources[@]}; do
+    [ -f $file ] && source $file
+done
 
 export PATH=$GOPATH/bin:$PATH
-
-if [ -f ~/.aliases ]; then
-    . ~/.aliases
-fi
-
-if [ -f ~/.localrc ]; then
-    . ~/.localrc
-fi

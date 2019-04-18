@@ -69,16 +69,19 @@ if [ -f Brewfile ]; then
     brew bundle install
 fi
 
-if [ -f .aliases ]; then
-    ln -sf $(pwd)/.aliases ~/.aliases
-fi
+symlinks=(
+    .aliases
+    .fzf.zsh
+    .gitignore
+)
 
-if [ -f .gitignore ]; then
-    ln -sf $(pwd)/.gitignore ~/.gitignore
-    git config --global user.name "ilya lavrenov"
-    git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
-    git config --global core.excludesfile ~/.gitignore
-fi
+for file in ${symlinks[@]}; do
+    [ -f $file ] && ln -sf $PWD/$file ~/$file
+done
+
+git config --global user.name "ilya lavrenov"
+git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
+git config --global core.excludesfile ~/.gitignore
 
 if [ ! -f ~/.ssh/id_rsa.pub ]; then
     ssh-keygen -t rsa -b 4096
