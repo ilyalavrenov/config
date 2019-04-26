@@ -73,6 +73,7 @@ symlinks=(
     .aliases
     .fzf.zsh
     .gitignore
+    .zshrc
 )
 
 for file in ${symlinks[@]}; do
