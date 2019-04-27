@@ -22,4 +22,4 @@ for file in ${sources[@]}; do
     [ -f $file ] && source $file
 done
 
-export PATH=$GOPATH/bin:$PATH
+export PATH=$PATH:$(go env GOPATH)/bin
