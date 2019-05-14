@@ -6,6 +6,7 @@ plugins=(
     aws
     docker
     git
+    kubectl
     osx
     terraform
 )
