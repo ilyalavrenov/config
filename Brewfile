@@ -1,6 +1,7 @@
 brew 'awscli'
 brew 'curl'
 brew 'ffmpeg'
+brew 'figlet'
 brew 'fzf'
 brew 'gawk'
 brew 'gifsicle'
