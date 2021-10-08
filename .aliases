@@ -4,6 +4,7 @@ alias rm='rm -i'
 alias afk='open -a ScreenSaverEngine'
 alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
 alias copyssh='pbcopy < ~/.ssh/id_rsa.pub'
+alias diff='git --no-pager diff --color=auto --no-ext-diff --no-index'
 alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
 alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias path='echo -e ${PATH//:/\\n}' 
@@ -11,27 +12,36 @@ alias reload='exec ${SHELL} -l'
 alias venv='virtualenv -p python3 venv && source venv/bin/activate'
 alias venv2='virtualenv -p python2 venv && source venv/bin/activate'
 
-alias dcu='docker-compose up'
-alias dcd='docker-compose down'
-alias dcb='docker-compose build'
-
-awscreds() {
-    if [ -z "$1" ]
-    then
-        echo "AWS creds currently set to $(readlink ~/.aws/credentials)"
-    else
-        ln -sf ~/.aws/credentials.$1 ~/.aws/credentials
-        echo "AWS creds symlinked to $(readlink ~/.aws/credentials)"
-    fi
-}
-
-cfpurge() {
-    dist_id=$(aws cloudfront list-distributions | jq -r '.[]["Items"][] | select(.Aliases.Items[]=='\"$1\"') | .Id')
-    [[ -z "$dist_id" ]] && echo "unable to find CF distribution with alias '$1'" && return 1 || echo "found CF distribution with ID $dist_id, purging cache..."
-    aws cloudfront create-invalidation --distribution-id $dist_id --paths '/*' | jq
-}
+alias ncdu="ncdu --color dark -rr -x"
+alias preview="fzf --preview 'bat --color \"always\" {}'"
+export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(code {})+abort'"
 
 genpasswd() {
     if [ -z "$1" ]; then length=16; else length=$1; fi    
     LC_CTYPE=C tr -dc 'A-Za-z0-9_!@#$%^&*' < /dev/urandom | head -c ${length} | xargs 
 }
+
+COL_UL="$(tput smul)"
+COL_BLUE="$(tput setaf 4)"
+COL_REST="$(tput sgr0)"
+COL_PURP="$(tput setaf 99)"
+__fzf_k8s_list__() {
+    kubectl config view -o jsonpath="{range .contexts[*]}{.name}{'\t'}$COL_UL$COL_PURP{.context.cluster}$COL_REST / {.context.namespace}{'\n'}{end}" |
+        sort -r |
+        fzf --history="$HOME/.fzf_history_k8s_list" \
+            --with-nth=2,3 \
+             --delimiter '\t' \
+             --bind "enter:execute(kubectl config use-context {1})+abort" \
+             --bind "tab:preview(kubectl --context={1} get pods -o wide)" \
+             --preview-window "hidden:up:70%" \
+             --header "${COL_BLUE}RET${COL_REST} Select kubectl context ${COL_BLUE}TAB${COL_REST} Preview pods" \
+             --ansi | head -1
+    if type _kube_ps1_update_cache &>/dev/null; then _kube_ps1_update_cache; fi
+}
+
+# Only do binding for interactive bash
+if [[ $- =~ i ]]; then
+    zle -N __fzf_k8s_list__
+    bindkey -M emacs '\er' redraw-current-line
+    bindkey -M emacs '^k' __fzf_k8s_list__ # bind to Ctrl-K
+fi

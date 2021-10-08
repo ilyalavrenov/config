@@ -56,28 +56,29 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 if ! xcode-select --version; then
-    xcode-select --install
+  xcode-select --install
 fi
 
 if ! which -s brew; then
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
-    brew update
+  brew update
 fi
 
 if [ -f Brewfile ]; then
-    brew bundle install
+  brew bundle install
 fi
 
 symlinks=(
-    .aliases
-    .fzf.zsh
-    .gitignore
-    .zshrc
+  .aliases
+  .fzf.zsh
+  .gitignore
+  .p10k.zsh
+  .zshrc
 )
 
 for file in ${symlinks[@]}; do
-    [ -f $file ] && ln -sf $PWD/$file ~/$file
+  [ -f $file ] && ln -sf $PWD/$file ~/$file
 done
 
 git config --global user.name "ilya lavrenov"
@@ -86,23 +87,16 @@ git config --global core.editor "code --wait"
 git config --global core.excludesfile ~/.gitignore
 
 if [ ! -f ~/.ssh/id_rsa.pub ]; then
-    ssh-keygen -t rsa -b 4096
-    cat ~/.ssh/id_rsa.pub
-    echo "add this pubkey to github \n"
-    echo "https://github.com/account/ssh \n"
-    read -p "hit [enter] to continue..."
-fi
-
-if [ ! -f ~/Library/Fonts/Menlo\ for\ Powerline.ttf ]; then
-    curl -sLo fonts.zip https://github.com/abertsch/Menlo-for-Powerline/archive/master.zip
-    unzip -j fonts.zip -d fonts/
-    cp -f fonts/*.ttf ~/Library/Fonts/
-    rm -rf fonts*
+  ssh-keygen -t rsa -b 4096
+  cat ~/.ssh/id_rsa.pub
+  echo "add this pubkey to github \n"
+  echo "https://github.com/account/ssh \n"
+  read -p "hit [enter] to continue..."
 fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
-    git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-    chsh -s /bin/zsh
+  git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+  chsh -s /bin/zsh
 else
-    exec ${SHELL} -l
+  exec ${SHELL} -l
 fi
