@@ -95,8 +95,8 @@ if [ ! -f ~/.ssh/id_rsa.pub ]; then
 fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
-  git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-  chsh -s /bin/zsh
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
 else
   exec ${SHELL} -l
 fi
