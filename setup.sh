@@ -66,7 +66,7 @@ else
 fi
 
 if [ -f Brewfile ]; then
-  brew bundle install
+  brew bundle install --verbose
 fi
 
 symlinks=(
@@ -96,7 +96,8 @@ fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  sudo dscl . -create /Users/$USER UserShell /usr/local/bin/zsh
+  sudo dscl . -create /Users/$USER UserShell $(brew --prefix)/bin/zsh
+  p10k configure
 else
   exec ${SHELL} -l
 fi
