@@ -7,9 +7,9 @@ fi
 
 export ZSH=$HOME/.oh-my-zsh
 
-HISTSIZE=99999
-HISTFILESIZE=999999
-SAVEHIST=$HISTSIZE
+export HISTSIZE=1000000000
+export HISTFILESIZE=1000000000
+export SAVEHIST=$HISTSIZE
 setopt appendhistory
 setopt sharehistory
 setopt incappendhistory
