@@ -5,14 +5,16 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export ZSH=$HOME/.oh-my-zsh
+export ZSH=${HOME}/.oh-my-zsh
 
 export HISTSIZE=1000000000
 export HISTFILESIZE=1000000000
-export SAVEHIST=$HISTSIZE
+export SAVEHIST=${HISTSIZE}
 setopt appendhistory
 setopt sharehistory
 setopt incappendhistory
+
+export BREW_PREFIX="$(brew --prefix)"
 
 plugins=(
     docker
@@ -23,9 +25,9 @@ plugins=(
 )
 
 sources=(
-    $ZSH/oh-my-zsh.sh
-    $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    $(brew --prefix)/opt/powerlevel10k/powerlevel10k.zsh-theme
+    ${ZSH}/oh-my-zsh.sh
+    ${BREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    ${BREW_PREFIX}/opt/powerlevel10k/powerlevel10k.zsh-theme
     ~/.p10k.zsh
     ~/.aliases
     ~/.localrc
@@ -34,18 +36,18 @@ sources=(
 )
 
 for file in ${sources[@]}; do
-    [ -f $file ] && source $file
+    [ -f ${file} ] && source ${file}
 done
 
-export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/sbin:${PATH}"
 export EDITOR="code --wait"
 
 if type go &>/dev/null; then
-    export PATH=$PATH:$(go env GOPATH)/bin
+    export PATH=${PATH}:$(go env GOPATH)/bin
 fi
 
 if type brew &>/dev/null; then
-    FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+    FPATH=${BREW_PREFIX}/share/zsh-completions:${FPATH}
 
     autoload -Uz compinit
     compinit
@@ -57,7 +59,7 @@ pasteinit() {
     zle -N self-insert url-quote-magic
 }
 pastefinish() {
-    zle -N self-insert $OLD_SELF_INSERT
+    zle -N self-insert ${OLD_SELF_INSERT}
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
