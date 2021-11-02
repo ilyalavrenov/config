@@ -110,7 +110,8 @@ fi
 
 if [ "${SHELL}" != "$(brew --prefix)/bin/zsh" ]; then
   sudo dscl . -create /Users/$USER UserShell $(brew --prefix)/bin/zsh
-  echo 'may need to run `compaudit | xargs chmod g-w`'
+  autoload -Uz compaudit
+  compaudit | xargs chmod g-w
 fi
 
 if [ ! -d ~/.oh-my-zsh ]; then
