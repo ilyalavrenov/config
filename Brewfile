@@ -1,3 +1,4 @@
+tap 'homebrew/cask-drivers'
 tap 'instrumenta/instrumenta'
 
 brew 'awscli'
@@ -52,6 +53,7 @@ cask 'google-chrome'
 cask 'iterm2'
 cask 'keka'
 cask 'keybase'
+cask 'logitech-options'
 cask 'rectangle'
 cask 'spotify'
 cask 'transmit'

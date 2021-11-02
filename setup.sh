@@ -10,6 +10,8 @@ chflags nohidden ~/Library
 
 osascript -e 'tell application "System Preferences" to quit'
 
+OLD_SETTINGS_HASH="$(defaults read | openssl sha256)"
+
 defaults write com.apple.ActivityMonitor ShowCategory -int 0
 defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
@@ -33,8 +35,8 @@ defaults write com.apple.dock wvous-tr-corner -int 5
 defaults write com.apple.dock wvous-tr-modifier -int 0
 defaults write com.apple.dock wvous-bl-corner -int 2
 defaults write com.apple.dock wvous-bl-modifier -int 0
-defaults write com.apple.dock wvous-br-corner -int 7
-defaults write com.apple.dock wvous-br-modifier -int 0
+defaults write com.apple.dock wvous-br-corner -int 1
+defaults write com.apple.dock wvous-br-modifier -int 1048576
 
 defaults write com.apple.LaunchServices LSQuarantine -bool false
 
@@ -43,6 +45,9 @@ defaults write com.apple.menuextra.battery ShowPercent -bool true
 
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -int 0
+
+defaults write NSGlobalDomain com.apple.mouse.scaling -int 1.5
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
@@ -54,6 +59,11 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+if [ "${OLD_SETTINGS_SHA256}" == "$(defaults read | openssl sha256)" ]; then
+  killall Dock
+  killall Finder
+fi
 
 if ! xcode-select --version; then
   xcode-select --install
