@@ -10,7 +10,7 @@ chflags nohidden ~/Library
 
 osascript -e 'tell application "System Preferences" to quit'
 
-OLD_SETTINGS_HASH="$(defaults read | openssl sha256)"
+OLD_SETTINGS_SHA256="$(defaults read | openssl sha256)"
 
 defaults write com.apple.ActivityMonitor ShowCategory -int 0
 defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
@@ -60,7 +60,7 @@ defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
-if [ "${OLD_SETTINGS_SHA256}" == "$(defaults read | openssl sha256)" ]; then
+if [ "${OLD_SETTINGS_SHA256}" != "$(defaults read | openssl sha256)" ]; then
   killall Dock
   killall Finder
 fi
@@ -71,6 +71,11 @@ fi
 
 if ! which -s brew; then
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  if ! /usr/sbin/sysctl -n machdep.cpu.brand_string | grep -o "Intel"; then
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/$USER/.zprofile
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+  fi
 else
   brew update
 fi
@@ -104,9 +109,13 @@ if [ ! -f ~/.ssh/id_rsa.pub ]; then
   read -p "hit [enter] to continue..."
 fi
 
+if [ "${SHELL}" != "$(brew --prefix)/bin/zsh" ]; then
+  sudo dscl . -create /Users/$USER UserShell $(brew --prefix)/bin/zsh
+  echo 'may need to run `compaudit | xargs chmod g-w`'
+fi
+
 if [ ! -d ~/.oh-my-zsh ]; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  sudo dscl . -create /Users/$USER UserShell $(brew --prefix)/bin/zsh
   p10k configure
 else
   exec ${SHELL} -l
