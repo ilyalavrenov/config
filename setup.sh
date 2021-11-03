@@ -46,6 +46,7 @@ defaults write com.apple.menuextra.battery ShowPercent -bool true
 defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
+defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 defaults write NSGlobalDomain com.apple.mouse.scaling -float 0.6875
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
