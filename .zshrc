@@ -20,7 +20,7 @@ plugins=(
     docker
     git
     kubectl
-    osx
+    macos
     terraform
 )
 
