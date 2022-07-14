@@ -96,6 +96,9 @@ for file in ${symlinks[@]}; do
   [ -f $file ] && ln -sf $PWD/$file ~/$file
 done
 
+mkdir -p ~/Library/Application\ Support/k9s
+ln -sf $PWD/k9s-skin.yml ~/Library/Application\ Support/k9s/skin.yml
+
 git config --global user.name "ilya lavrenov"
 git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
 git config --global core.editor "code --wait"
