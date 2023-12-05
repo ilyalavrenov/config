@@ -1,5 +1,4 @@
 tap 'homebrew/cask-drivers'
-tap 'instrumenta/instrumenta'
 
 brew 'awscli'
 brew 'bat'
@@ -44,7 +43,6 @@ brew 'zsh-completions'
 brew 'zsh-syntax-highlighting'
 brew 'zsh'
 
-brew 'instrumenta/instrumenta/kubeval'
 brew 'romkatv/powerlevel10k/powerlevel10k'
 
 cask '1password'

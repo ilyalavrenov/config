@@ -21,6 +21,14 @@ genpasswd() {
     LC_ALL=C tr -dc 'A-Za-z0-9_!@#$%^&*' < /dev/urandom | head -c ${length} | xargs | tee >(pbcopy)
 }
 
+eks_build_kubeconfigs() {
+    for region in $(aws ec2 describe-regions --output json | jq -r '.Regions[].RegionName'); do
+        for cluster in $(aws eks list-clusters --region $region --output json | jq -r '.clusters[]'); do
+            aws eks update-kubeconfig --region $region --name $cluster
+        done
+    done
+}
+
 COL_UL="$(tput smul)"
 COL_BLUE="$(tput setaf 4)"
 COL_REST="$(tput sgr0)"

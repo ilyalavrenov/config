@@ -103,6 +103,8 @@ git config --global user.name "ilya lavrenov"
 git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
 git config --global core.editor "code --wait"
 git config --global core.excludesfile ~/.gitignore
+git config --global alias.co checkout
+git config --global --add push.autoSetupRemote true
 
 if [ ! -f ~/.ssh/id_rsa.pub ]; then
   ssh-keygen -t rsa -b 4096
