@@ -99,6 +99,9 @@ done
 mkdir -p ~/Library/Application\ Support/k9s
 ln -sf $PWD/k9s-skin.yml ~/Library/Application\ Support/k9s/skin.yml
 
+mkdir -p  ~/Library/Application\ Support/com.mitchellh.ghostty
+ln -sf $PWD/ghosttyconfig ~/Library/Application\ Support/com.mitchellh.ghostty/config
+
 git config --global user.name "ilya lavrenov"
 git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
 git config --global core.editor "code --wait"
