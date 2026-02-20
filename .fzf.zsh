@@ -1,4 +1,5 @@
-BREW_PREFIX="$(brew --prefix)"
+# Use cached brew prefix or fallback
+BREW_PREFIX=${BREW_PREFIX:-"/opt/homebrew"}
 
 # Setup fzf
 # ---------

@@ -27,7 +27,7 @@ plugins=(
 sources=(
     ${ZSH}/oh-my-zsh.sh
     ${BREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    ${BREW_PREFIX}/opt/powerlevel10k/powerlevel10k.zsh-theme
+    ${BREW_PREFIX}/share/powerlevel10k/powerlevel10k.zsh-theme
     ~/.p10k.zsh
     ~/.aliases
     ~/.localrc
@@ -40,7 +40,7 @@ for file in ${sources[@]}; do
 done
 
 export PATH="/usr/local/sbin:${PATH}"
-export EDITOR="code --wait"
+export EDITOR="cursor --wait"
 
 if type go &>/dev/null; then
     export PATH=${PATH}:$(go env GOPATH)/bin
@@ -50,7 +50,7 @@ if type brew &>/dev/null; then
     FPATH=${BREW_PREFIX}/share/zsh-completions:${FPATH}
 
     autoload -Uz compinit
-    compinit
+    compinit -C
 fi
 
 # fix slowness of pastes with zsh-syntax-highlighting.zsh
