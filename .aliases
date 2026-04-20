@@ -3,18 +3,31 @@ alias rm='rm -i'
 
 alias afk='open -a ScreenSaverEngine'
 alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
-alias copyssh='pbcopy < ~/.ssh/id_rsa.pub'
+alias copyssh='ssh-add -L | pbcopy'
 alias diff='git --no-pager diff --color=auto --no-ext-diff --no-index'
 alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
 alias ip='curl ifconfig.me -w "\n"'
 alias path='echo -e ${PATH//:/\\n}' 
 alias reload='exec ${SHELL} -l'
-alias venv='if [ ! -f venv/bin/activate ]; then virtualenv -p python3 venv; fi; source venv/bin/activate'
+alias venv='[ -f .venv/bin/activate ] || uv venv; source .venv/bin/activate'
 alias k9s='k9s -A'
 
 alias ncdu="ncdu --color dark -rr -x"
 alias preview="fzf --preview 'bat --color \"always\" {}'"
-export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(code {})+abort'"
+export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(cursor {})+abort'"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:500 {}'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
+
+rgf() {
+    RG_PREFIX="rg --line-number --no-heading --color=always --smart-case"
+    : | fzf --ansi --disabled --query "${1:-}" \
+            --bind "start:reload:$RG_PREFIX {q}" \
+            --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+            --delimiter ':' \
+            --preview 'bat --color=always --highlight-line {2} {1}' \
+            --preview-window 'right,60%,+{2}-/2' \
+            --bind 'enter:execute(cursor -g {1}:{2})'
+}
 
 genpasswd() {
     if [ -z "$1" ]; then length=16; else length=$1; fi    

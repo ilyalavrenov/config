@@ -7,14 +7,17 @@ fi
 
 export ZSH=${HOME}/.oh-my-zsh
 
-export HISTSIZE=1000000000
-export HISTFILESIZE=1000000000
+export HISTSIZE=100000
 export SAVEHIST=${HISTSIZE}
 setopt appendhistory
 setopt sharehistory
 setopt incappendhistory
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_reduce_blanks
+setopt hist_verify
 
-export BREW_PREFIX="$(brew --prefix)"
+export BREW_PREFIX="/opt/homebrew"
 
 plugins=(
     docker
@@ -32,7 +35,6 @@ sources=(
     ~/.aliases
     ~/.localrc
     ~/.fzf.zsh
-    ~/.iterm2_shell_integration.zsh
     ~/.config/op/plugins.sh
 )
 
@@ -40,12 +42,11 @@ for file in ${sources[@]}; do
     [ -f ${file} ] && source ${file}
 done
 
-export PATH="/usr/local/sbin:${PATH}"
+[[ "$TERM_PROGRAM" == "iTerm.app" ]] && [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
+
 export EDITOR="cursor --wait"
 
-if type go &>/dev/null; then
-    export PATH=${PATH}:$(go env GOPATH)/bin
-fi
+export PATH="${PATH}:${HOME}/go/bin"
 
 if type brew &>/dev/null; then
     FPATH=${BREW_PREFIX}/share/zsh-completions:${FPATH}

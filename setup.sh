@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -uxo pipefail
+set -euxo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 IFS=$'\n\t'
 
@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 
 chflags nohidden ~/Library
 
-osascript -e 'tell application "System Preferences" to quit'
+osascript -e 'tell application "System Settings" to quit'
 
 OLD_SETTINGS_SHA256="$(defaults read | openssl sha256)"
 
@@ -29,26 +29,35 @@ defaults write com.apple.dock wvous-tr-corner -int 5
 defaults write com.apple.dock wvous-tr-modifier -int 0
 
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -int 0
+defaults -currentHost write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerTapGesture -int 0
+defaults -currentHost write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerTapGesture -int 0
 
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
 defaults write com.apple.finder NewWindowTarget -string "PfCm"
-defaults write com.apple.finder QLEnableTextSelection -bool true
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
 defaults write com.apple.finder ShowPathbar -bool true
 defaults write com.apple.finder ShowStatusBar -bool true
 
-defaults write com.apple.LaunchServices LSQuarantine -bool false
-defaults write com.apple.menuextra.battery ShowPercent -bool true
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true
+defaults write com.apple.controlcenter "NSStatusItem Visible AudioVideoModule" -bool false
+defaults write com.apple.controlcenter "NSStatusItem Visible FaceTime" -bool false
+defaults write com.apple.controlcenter "NSStatusItem Visible FocusModes" -bool false
 defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
-defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+defaults write com.apple.menuextra.clock ShowAMPM -bool true
+defaults write com.apple.menuextra.clock ShowDate -int 0
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
 
 defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
+defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool false
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 defaults write NSGlobalDomain com.apple.mouse.scaling -float 0.6875
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.forceClick -bool true
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
@@ -63,6 +72,7 @@ defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 if [ "${OLD_SETTINGS_SHA256}" != "$(defaults read | openssl sha256)" ]; then
   killall Dock
   killall Finder
+  killall ControlCenter
 fi
 
 if ! xcode-select --version; then
@@ -70,7 +80,7 @@ if ! xcode-select --version; then
 fi
 
 if ! which -s brew; then
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   if ! /usr/sbin/sysctl -n machdep.cpu.brand_string | grep -o "Intel"; then
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/$USER/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -81,7 +91,7 @@ else
 fi
 
 if [ -f Brewfile ]; then
-  brew bundle install --verbose
+  brew bundle install --verbose --adopt
 fi
 
 symlinks=(
@@ -92,21 +102,20 @@ symlinks=(
   .zshrc
 )
 
-for file in ${symlinks[@]}; do
-  [ -f $file ] && ln -sf $PWD/$file ~/$file
+for file in "${symlinks[@]}"; do
+  [ -f "$file" ] && ln -sf "$PWD/$file" "$HOME/$file"
 done
-
-mkdir -p ~/Library/Application\ Support/k9s
-ln -sf $PWD/k9s-skin.yml ~/Library/Application\ Support/k9s/skin.yml
 
 mkdir -p  ~/Library/Application\ Support/com.mitchellh.ghostty
 ln -sf $PWD/ghosttyconfig ~/Library/Application\ Support/com.mitchellh.ghostty/config
 
+git config --global alias.ci commit
 git config --global alias.co checkout
+git config --global alias.st status
 git config --global branch.sort -committerdate
 git config --global column.ui auto
 git config --global commit.verbose true
-git config --global core.editor "code --wait"
+git config --global core.editor "cursor --wait"
 git config --global core.excludesfile ~/.gitignore
 git config --global diff.algorithm histogram
 git config --global diff.colorMoved plain
@@ -125,16 +134,12 @@ git config --global tag.sort version:refname
 git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
 git config --global user.name "ilya lavrenov"
 
-if [ ! -f ~/.ssh/id_rsa.pub ]; then
-  ssh-keygen -t rsa -b 4096
-  cat ~/.ssh/id_rsa.pub
-  echo "add this pubkey to github \n"
-  echo "https://github.com/account/ssh \n"
-  read -p "hit [enter] to continue..."
-fi
-
-if [ "${SHELL}" != "$(brew --prefix)/bin/zsh" ]; then
-  sudo dscl . -create /Users/$USER UserShell $(brew --prefix)/bin/zsh
+BREW_ZSH="$(brew --prefix)/bin/zsh"
+if [ "${SHELL}" != "${BREW_ZSH}" ]; then
+  if ! grep -qxF "${BREW_ZSH}" /etc/shells; then
+    echo "${BREW_ZSH}" | sudo tee -a /etc/shells >/dev/null
+  fi
+  chsh -s "${BREW_ZSH}"
   autoload -Uz compaudit
   compaudit | xargs chmod g-w
 fi
