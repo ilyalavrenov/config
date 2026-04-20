@@ -91,7 +91,7 @@ else
 fi
 
 if [ -f Brewfile ]; then
-  brew bundle install --verbose --adopt
+  HOMEBREW_CASK_OPTS="--adopt" brew bundle install --verbose
 fi
 
 symlinks=(
