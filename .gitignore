@@ -1,5 +1,6 @@
 .vscode/*
 **.tfstate*
+.terraform/*
 venv
 *.log
 *.sqlite
@@ -13,3 +14,4 @@ venv
 *.tar
 *.tar.gz
 *.zip
+.env

@@ -9,8 +9,8 @@ alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelpe
 alias ip='curl ifconfig.me -w "\n"'
 alias path='echo -e ${PATH//:/\\n}' 
 alias reload='exec ${SHELL} -l'
-alias venv='virtualenv -p python3 venv && source venv/bin/activate'
-alias venv2='virtualenv -p python2 venv && source venv/bin/activate'
+alias venv='if [ ! -f venv/bin/activate ]; then virtualenv -p python3 venv; fi; source venv/bin/activate'
+alias k9s='k9s -A'
 
 alias ncdu="ncdu --color dark -rr -x"
 alias preview="fzf --preview 'bat --color \"always\" {}'"

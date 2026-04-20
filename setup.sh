@@ -102,12 +102,28 @@ ln -sf $PWD/k9s-skin.yml ~/Library/Application\ Support/k9s/skin.yml
 mkdir -p  ~/Library/Application\ Support/com.mitchellh.ghostty
 ln -sf $PWD/ghosttyconfig ~/Library/Application\ Support/com.mitchellh.ghostty/config
 
-git config --global user.name "ilya lavrenov"
-git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
+git config --global alias.co checkout
+git config --global branch.sort -committerdate
+git config --global column.ui auto
+git config --global commit.verbose true
 git config --global core.editor "code --wait"
 git config --global core.excludesfile ~/.gitignore
-git config --global alias.co checkout
-git config --global --add push.autoSetupRemote true
+git config --global diff.algorithm histogram
+git config --global diff.colorMoved plain
+git config --global diff.mnemonicPrefix true
+git config --global diff.renames true
+git config --global fetch.all true
+git config --global fetch.prune true
+git config --global fetch.pruneTags true
+git config --global help.autocorrect prompt
+git config --global init.defaultBranch main
+git config --global push.autoSetupRemote true
+git config --global rebase.autoSquash true
+git config --global rebase.autoStash true
+git config --global rebase.updateRefs true
+git config --global tag.sort version:refname
+git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
+git config --global user.name "ilya lavrenov"
 
 if [ ! -f ~/.ssh/id_rsa.pub ]; then
   ssh-keygen -t rsa -b 4096

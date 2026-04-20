@@ -33,6 +33,7 @@ sources=(
     ~/.localrc
     ~/.fzf.zsh
     ~/.iterm2_shell_integration.zsh
+    ~/.config/op/plugins.sh
 )
 
 for file in ${sources[@]}; do
