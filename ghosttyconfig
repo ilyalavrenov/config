@@ -5,7 +5,6 @@ macos-titlebar-style = tabs
 theme = iTerm2 Solarized Dark
 font-thicken = true
 font-thicken-strength = 200
-adjust-cell-width = "-10%"
 keybind = opt+delete=esc:d
 copy-on-select = clipboard
 window-inherit-working-directory = false
