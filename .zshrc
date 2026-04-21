@@ -5,7 +5,11 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export ZSH=${HOME}/.oh-my-zsh
+export BREW_PREFIX="/opt/homebrew"
+export ZSH="${HOME}/.oh-my-zsh"
+export EDITOR="cursor --wait"
+export AWS_PAGER=""
+export PATH="${PATH}:${HOME}/go/bin"
 
 export HISTSIZE=100000
 export SAVEHIST=${HISTSIZE}
@@ -16,8 +20,6 @@ setopt hist_ignore_dups
 setopt hist_ignore_space
 setopt hist_reduce_blanks
 setopt hist_verify
-
-export BREW_PREFIX="/opt/homebrew"
 
 plugins=(
     docker
@@ -43,10 +45,6 @@ for file in ${sources[@]}; do
 done
 
 [[ "$TERM_PROGRAM" == "iTerm.app" ]] && [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
-
-export EDITOR="cursor --wait"
-
-export PATH="${PATH}:${HOME}/go/bin"
 
 if type brew &>/dev/null; then
     FPATH=${BREW_PREFIX}/share/zsh-completions:${FPATH}
