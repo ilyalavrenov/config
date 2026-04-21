@@ -106,6 +106,18 @@ for file in "${symlinks[@]}"; do
   [ -f "$file" ] && ln -sf "$PWD/$file" "$HOME/$file"
 done
 
+FONT_DIR="$HOME/Library/Fonts"
+MESLO_BASE="https://github.com/romkatv/powerlevel10k-media/raw/master"
+mkdir -p "$FONT_DIR"
+for f in "MesloLGS NF Regular.ttf" \
+         "MesloLGS NF Bold.ttf" \
+         "MesloLGS NF Italic.ttf" \
+         "MesloLGS NF Bold Italic.ttf"; do
+  if [ ! -f "$FONT_DIR/$f" ]; then
+    curl -fsSL "$MESLO_BASE/${f// /%20}" -o "$FONT_DIR/$f"
+  fi
+done
+
 mkdir -p  ~/Library/Application\ Support/com.mitchellh.ghostty
 ln -sf $PWD/ghosttyconfig ~/Library/Application\ Support/com.mitchellh.ghostty/config
 
