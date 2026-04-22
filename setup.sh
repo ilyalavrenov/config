@@ -146,6 +146,27 @@ git config --global tag.sort version:refname
 git config --global user.email "17838283+ilyalavrenov@users.noreply.github.com"
 git config --global user.name "ilya lavrenov"
 
+OP_AGENT_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+OP_SSH_SIGN="/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+touch "$HOME/.ssh/config"
+chmod 600 "$HOME/.ssh/config"
+if ! grep -qF "$OP_AGENT_SOCK" "$HOME/.ssh/config"; then
+  printf 'Host *\n\tIdentityAgent "%s"\n\n%s' "$OP_AGENT_SOCK" "$(cat "$HOME/.ssh/config")" > "$HOME/.ssh/config.tmp"
+  mv "$HOME/.ssh/config.tmp" "$HOME/.ssh/config"
+  chmod 600 "$HOME/.ssh/config"
+fi
+
+curl -fsSL https://api.github.com/users/ilyalavrenov/ssh_signing_keys \
+  | jq -r '.[0].key' > "$HOME/.ssh/signing-key.pub"
+chmod 600 "$HOME/.ssh/signing-key.pub"
+git config --global gpg.format ssh
+git config --global gpg.ssh.program "$OP_SSH_SIGN"
+git config --global user.signingkey "$HOME/.ssh/signing-key.pub"
+git config --global commit.gpgsign true
+git config --global tag.gpgsign true
+
 BREW_ZSH="$(brew --prefix)/bin/zsh"
 if [ "${SHELL}" != "${BREW_ZSH}" ]; then
   if ! grep -qxF "${BREW_ZSH}" /etc/shells; then
