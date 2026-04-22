@@ -75,17 +75,17 @@ if [ "${OLD_SETTINGS_SHA256}" != "$(defaults read | openssl sha256)" ]; then
   killall ControlCenter
 fi
 
-if ! xcode-select --version; then
+if ! xcode-select -p >/dev/null 2>&1; then
   xcode-select --install
 fi
 
 if ! which -s brew; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  if ! /usr/sbin/sysctl -n machdep.cpu.brand_string | grep -o "Intel"; then
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/$USER/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    /usr/sbin/softwareupdate --install-rosetta --agree-to-license
-  fi
+  BREW_SHELLENV='eval "$(/opt/homebrew/bin/brew shellenv)"'
+  grep -qxF "$BREW_SHELLENV" "$HOME/.zprofile" 2>/dev/null \
+    || echo "$BREW_SHELLENV" >> "$HOME/.zprofile"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  /usr/sbin/softwareupdate --install-rosetta --agree-to-license
 else
   brew update
 fi
@@ -95,15 +95,21 @@ if [ -f Brewfile ]; then
 fi
 
 symlinks=(
-  .aliases
-  .fzf.zsh
-  .gitignore
-  .p10k.zsh
-  .zshrc
+  ".aliases:.aliases"
+  ".fzf.zsh:.fzf.zsh"
+  ".gitignore:.gitignore"
+  ".p10k.zsh:.p10k.zsh"
+  ".zshrc:.zshrc"
+  "cursor.json:Library/Application Support/Cursor/User/settings.json"
+  "ghosttyconfig:Library/Application Support/com.mitchellh.ghostty/config"
 )
 
-for file in "${symlinks[@]}"; do
-  [ -f "$file" ] && ln -sf "$PWD/$file" "$HOME/$file"
+for entry in "${symlinks[@]}"; do
+  src="${entry%%:*}"
+  dst="${entry#*:}"
+  [ -f "$src" ] || continue
+  mkdir -p "$HOME/$(dirname "$dst")"
+  ln -sf "$PWD/$src" "$HOME/$dst"
 done
 
 FONT_DIR="$HOME/Library/Fonts"
@@ -117,9 +123,6 @@ for f in "MesloLGS NF Regular.ttf" \
     curl -fsSL "$MESLO_BASE/${f// /%20}" -o "$FONT_DIR/$f"
   fi
 done
-
-mkdir -p  ~/Library/Application\ Support/com.mitchellh.ghostty
-ln -sf $PWD/ghosttyconfig ~/Library/Application\ Support/com.mitchellh.ghostty/config
 
 git config --global alias.ci commit
 git config --global alias.co checkout
@@ -158,14 +161,23 @@ if ! grep -qF "$OP_AGENT_SOCK" "$HOME/.ssh/config"; then
   chmod 600 "$HOME/.ssh/config"
 fi
 
-curl -fsSL https://api.github.com/users/ilyalavrenov/ssh_signing_keys \
-  | jq -r '.[0].key' > "$HOME/.ssh/signing-key.pub"
-chmod 600 "$HOME/.ssh/signing-key.pub"
+if [ ! -f "$HOME/.ssh/signing-key.pub" ]; then
+  curl -fsSL https://api.github.com/users/ilyalavrenov/ssh_signing_keys \
+    | jq -r '.[0].key' > "$HOME/.ssh/signing-key.pub"
+  chmod 600 "$HOME/.ssh/signing-key.pub"
+fi
 git config --global gpg.format ssh
 git config --global gpg.ssh.program "$OP_SSH_SIGN"
 git config --global user.signingkey "$HOME/.ssh/signing-key.pub"
 git config --global commit.gpgsign true
 git config --global tag.gpgsign true
+
+if command -v cursor >/dev/null && [ -f cursor.ext ]; then
+  installed="$(cursor --list-extensions)"
+  while IFS= read -r ext; do
+    grep -qxF "$ext" <<< "$installed" || cursor --install-extension "$ext"
+  done < cursor.ext
+fi
 
 BREW_ZSH="$(brew --prefix)/bin/zsh"
 if [ "${SHELL}" != "${BREW_ZSH}" ]; then
@@ -174,6 +186,7 @@ if [ "${SHELL}" != "${BREW_ZSH}" ]; then
   fi
   chsh -s "${BREW_ZSH}"
   autoload -Uz compaudit
-  compaudit | xargs chmod g-w
+  insecure="$(compaudit)"
+  [ -n "$insecure" ] && chmod g-w $insecure
 fi
 
