@@ -13,7 +13,6 @@ keybind = cmd+opt+left=goto_split:left
 keybind = cmd+opt+right=goto_split:right
 keybind = cmd+opt+up=goto_split:up
 keybind = delete=text:\x04
-keybind = global:cmd+grave_accent=toggle_quick_terminal
 keybind = opt+delete=esc:d
 macos-auto-secure-input = true
 macos-option-as-alt = true
