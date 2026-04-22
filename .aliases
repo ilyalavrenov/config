@@ -1,19 +1,20 @@
-alias ll='ls -FGlAhp'
-alias rm='rm -i'
-
 alias afk='open -a ScreenSaverEngine'
 alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
 alias copyssh='ssh-add -L | pbcopy'
 alias diff='git --no-pager diff --color=auto --no-ext-diff --no-index'
 alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
 alias ip='curl ifconfig.me -w "\n"'
-alias path='echo -e ${PATH//:/\\n}' 
-alias reload='exec ${SHELL} -l'
-alias venv='[ -f .venv/bin/activate ] || uv venv; source .venv/bin/activate'
+alias k='kubectl'
 alias k9s='k9s -A'
-
+alias ll='ls -FGlAhp'
 alias ncdu="ncdu --color dark -rr -x"
+alias path='echo -e ${PATH//:/\\n}' 
 alias preview="fzf --preview 'bat --color \"always\" {}'"
+alias reload='exec ${SHELL} -l'
+alias rm='rm -i'
+alias tf='terraform'
+alias venv='[ -f .venv/bin/activate ] || uv venv; source .venv/bin/activate'
+
 export FZF_DEFAULT_OPTS="--bind='ctrl-o:execute(cursor {})+abort'"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
@@ -30,7 +31,7 @@ rgf() {
 }
 
 genpasswd() {
-    if [ -z "$1" ]; then length=16; else length=$1; fi    
+    local length=${1:-16}
     LC_ALL=C tr -dc 'A-Za-z0-9_!@#$%^&*' < /dev/urandom | head -c ${length} | xargs | tee >(pbcopy)
 }
 

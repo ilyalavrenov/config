@@ -156,9 +156,3 @@ if [ "${SHELL}" != "${BREW_ZSH}" ]; then
   compaudit | xargs chmod g-w
 fi
 
-if [ ! -d ~/.oh-my-zsh ]; then
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  p10k configure
-else
-  exec ${SHELL} -l
-fi
