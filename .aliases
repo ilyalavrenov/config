@@ -11,7 +11,6 @@ alias ncdu="ncdu --color dark -rr -x"
 alias path='echo -e ${PATH//:/\\n}' 
 alias preview="fzf --preview 'bat --color \"always\" {}'"
 alias reload='source ~/.zshrc'
-alias rm='rm -i'
 alias tf='terraform'
 alias venv='[ -f .venv/bin/activate ] || uv venv; source .venv/bin/activate'
 
