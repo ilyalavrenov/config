@@ -102,6 +102,7 @@ symlinks=(
   ".zshrc:.zshrc"
   "cursor.json:Library/Application Support/Cursor/User/settings.json"
   "ghosttyconfig:Library/Application Support/com.mitchellh.ghostty/config"
+  "mise.toml:.config/mise/config.toml"
 )
 
 for entry in "${symlinks[@]}"; do
@@ -111,6 +112,11 @@ for entry in "${symlinks[@]}"; do
   mkdir -p "$HOME/$(dirname "$dst")"
   ln -sf "$PWD/$src" "$HOME/$dst"
 done
+
+if command -v mise >/dev/null; then
+  mise trust "$PWD/mise.toml"
+  mise install
+fi
 
 FONT_DIR="$HOME/Library/Fonts"
 MESLO_BASE="https://github.com/romkatv/powerlevel10k-media/raw/master"

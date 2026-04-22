@@ -52,5 +52,9 @@ if command -v terraform &>/dev/null; then
     complete -o nospace -C "$(command -v terraform)" terraform tf
 fi
 
+if command -v mise &>/dev/null; then
+    eval "$(mise activate zsh)"
+fi
+
 # fix slowness of pastes with zsh-syntax-highlighting.zsh
 zstyle ':bracketed-paste-magic' active-widgets '.self-*'
