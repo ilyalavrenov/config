@@ -13,7 +13,7 @@ keybind = cmd+opt+left=goto_split:left
 keybind = cmd+opt+right=goto_split:right
 keybind = cmd+opt+up=goto_split:up
 keybind = delete=text:\x04
-keybind = opt+delete=esc:d
+keybind = opt+delete=text:\x1b\x7f
 macos-auto-secure-input = true
 macos-option-as-alt = true
 macos-titlebar-proxy-icon = visible
@@ -21,13 +21,15 @@ macos-titlebar-style = tabs
 mouse-hide-while-typing = true
 quick-terminal-position = center
 quick-terminal-size = 60%,50%
-scrollback-limit = 100_000
+scrollback-limit = 100_000_000
 selection-foreground = #ffffff
 shell-integration-features = no-cursor
 split-divider-color = #073642
+tab-inherit-working-directory = false
 theme = iTerm2 Solarized Dark
 unfocused-split-opacity = 0.75
 window-colorspace = display-p3
 window-inherit-working-directory = false
 window-new-tab-position = end
 window-save-state = always
+working-directory = home
