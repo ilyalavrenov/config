@@ -1,24 +1,44 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+export AWS_PAGER=""
 export BREW_PREFIX="/opt/homebrew"
 export EDITOR="cursor --wait"
-export AWS_PAGER=""
 export PATH="${PATH}:${HOME}/go/bin"
+export WORDCHARS=""
 
 export HISTSIZE=100000
 export SAVEHIST=${HISTSIZE}
 setopt appendhistory
-setopt sharehistory
-setopt incappendhistory
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_find_no_dups
 setopt hist_ignore_dups
 setopt hist_ignore_space
 setopt hist_reduce_blanks
 setopt hist_verify
+setopt incappendhistory
+setopt sharehistory
+
+setopt auto_cd
+setopt auto_pushd
+setopt interactive_comments
+setopt pushd_ignore_dups
+setopt pushd_silent
+
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' menu select
+
+# fix slowness of pastes with zsh-syntax-highlighting.zsh
+zstyle ':bracketed-paste-magic' active-widgets '.self-*'
+
+bindkey -e
+bindkey "^[[H"  beginning-of-line
+bindkey "^[[F"  end-of-line
+bindkey "^[[1~" beginning-of-line
+bindkey "^[[4~" end-of-line
 
 sources=(
     ${BREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -56,5 +76,3 @@ if command -v mise &>/dev/null; then
     eval "$(mise activate zsh)"
 fi
 
-# fix slowness of pastes with zsh-syntax-highlighting.zsh
-zstyle ':bracketed-paste-magic' active-widgets '.self-*'

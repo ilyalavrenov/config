@@ -107,6 +107,22 @@ setup_homebrew() {
   fi
 }
 
+setup_dock() {
+  log "setup: dock"
+  local apps=(
+    "/Applications/Google Chrome.app"
+    "/Applications/Cursor.app"
+    "/Applications/Ghostty.app"
+  )
+  local app changed=0
+  for app in "${apps[@]}"; do
+    [ -d "$app" ] || continue
+    dockutil --find "$(basename "$app" .app)" >/dev/null 2>&1 \
+      || { dockutil --add "$app" --no-restart; changed=1; }
+  done
+  [ "$changed" -eq 1 ] && killall Dock 2>/dev/null || true
+}
+
 setup_symlinks() {
   log "setup: symlinks"
   local symlinks=(
@@ -272,6 +288,7 @@ main() {
   setup_xcode_cli
   setup_rosetta
   setup_homebrew
+  setup_dock
   setup_symlinks
   setup_claude_settings
   setup_mise_tools
