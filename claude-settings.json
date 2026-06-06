@@ -11,6 +11,24 @@
       "Bash(curl https://raw.githubusercontent.com/*)",
       "Bash(date:*)",
       "Bash(find:*)",
+      "Bash(gh -R * issue list:*)",
+      "Bash(gh -R * issue status:*)",
+      "Bash(gh -R * issue view:*)",
+      "Bash(gh -R * pr checks:*)",
+      "Bash(gh -R * pr diff:*)",
+      "Bash(gh -R * pr list:*)",
+      "Bash(gh -R * pr status:*)",
+      "Bash(gh -R * pr view:*)",
+      "Bash(gh -R * release list:*)",
+      "Bash(gh -R * release view:*)",
+      "Bash(gh -R * repo list:*)",
+      "Bash(gh -R * repo view:*)",
+      "Bash(gh -R * run list:*)",
+      "Bash(gh -R * run view:*)",
+      "Bash(gh -R * search:*)",
+      "Bash(gh -R * status:*)",
+      "Bash(gh -R * workflow list:*)",
+      "Bash(gh -R * workflow view:*)",
       "Bash(gh issue list:*)",
       "Bash(gh issue status:*)",
       "Bash(gh issue view:*)",
@@ -94,7 +112,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay /System/Library/Sounds/Frog.aiff"
+            "command": "afplay /System/Library/Sounds/Frog.aiff &"
           }
         ]
       }
@@ -105,7 +123,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay /System/Library/Sounds/Frog.aiff"
+            "command": "afplay /System/Library/Sounds/Frog.aiff &"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Frog.aiff &"
           }
         ]
       }
@@ -113,12 +142,13 @@
   },
   "enabledPlugins": {
     "claude-md-management@claude-plugins-official": false,
-    "context7@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": false,
-    "gopls-lsp@claude-plugins-official": false,
+    "gopls-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true
   },
   "effortLevel": "xhigh",
-  "model": "claude-opus-4-7[1m]"
+  "model": "claude-opus-4-8[1m]",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true
 }

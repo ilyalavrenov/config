@@ -11,6 +11,7 @@ alias ncdu="ncdu --color dark -rr -x"
 alias path='echo -e ${PATH//:/\\n}' 
 alias preview="fzf --preview 'bat --color \"always\" {}'"
 alias reload='source ~/.zshrc'
+alias squashall='base=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed "s@^origin/@@") && merge_base=$(git merge-base HEAD "${base:-main}") && first=$(git rev-list "$merge_base"..HEAD | tail -1) && git reset --soft "$merge_base" && git commit -eF <(git log -1 --format=%B "$first")'
 alias tf='terraform'
 alias venv='[ -f .venv/bin/activate ] || uv venv; source .venv/bin/activate'
 
@@ -32,6 +33,75 @@ rgf() {
 genpasswd() {
     local length=${1:-16}
     LC_ALL=C tr -dc 'A-Za-z0-9_!@#$%^&*' < /dev/urandom | head -c ${length} | xargs | tee >(pbcopy)
+}
+
+gwtclean() {
+    local main=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')
+    main=${main:-main}
+    git fetch --quiet origin "$main" 2>/dev/null
+    local merged_prs=""
+    command -v gh >/dev/null 2>&1 && merged_prs=$(gh pr list --state merged --limit 200 --json headRefName,headRefOid --jq '.[] | "\(.headRefName)|\(.headRefOid)"' 2>/dev/null)
+    local out="" any_stale=0
+    while IFS='|' read -r wt branch locked prunable; do
+        [ -z "$wt" ] && continue
+        [ "$branch" = "$main" ] && continue
+        local act="" reason="" porc="" cherry="" pr_tip="" age="-"
+        local label=${branch:-"(detached) $wt"}
+        [ -d "$wt" ] && age=$(git -C "$wt" log -1 --format=%cr HEAD 2>/dev/null)
+        age=${age:--}
+
+        if [ "$prunable" = 1 ] || [ ! -d "$wt" ]; then
+            act=prune; reason=stale; any_stale=1
+        elif [ "$locked" = 1 ]; then
+            act=skip; reason=locked
+        elif porc=$(git -C "$wt" status --porcelain 2>/dev/null) && [ -n "$porc" ]; then
+            act=skip
+            printf '%s\n' "$porc" | grep -qv '^??' && reason=dirty || reason=untracked
+        elif [ -n "$branch" ] && [ -n "$(git -C "$wt" log '@{u}..HEAD' --oneline 2>/dev/null)" ]; then
+            act=skip; reason=unpushed
+        else
+            cherry=$(git -C "$wt" cherry "origin/$main" HEAD 2>/dev/null)
+            if [ -z "$cherry" ] || ! printf '%s\n' "$cherry" | grep -q '^+'; then
+                act=remove; reason=merged
+            else
+                [ -n "$branch" ] && pr_tip=$(printf '%s\n' "$merged_prs" | awk -F'|' -v b="$branch" '$1==b {print $2; exit}')
+                if [ -n "$pr_tip" ] && git -C "$wt" merge-base --is-ancestor HEAD "$pr_tip" 2>/dev/null; then
+                    act=remove; reason=squashed
+                else
+                    act=skip; reason=unmerged
+                fi
+            fi
+        fi
+        out+="$act"$'\t'"$reason"$'\t'"$label"$'\t'"$age"$'\t'"$wt"$'\t'"$branch"$'\n'
+    done < <(git worktree list --porcelain | awk '
+        function flush() { if (wt != "") print wt"|"br"|"lk"|"pr; wt=""; br=""; lk=0; pr=0 }
+        /^worktree / { flush(); wt=$2; next }
+        /^branch refs\/heads\// { br=substr($0,19); next }
+        /^locked/ { lk=1; next }
+        /^prunable/ { pr=1; next }
+        END { flush() }
+    ')
+
+    [ -z "$out" ] && { echo "nothing to do"; return 0; }
+    local lw=$(printf '%s' "$out" | awk -F'\t' 'length($3)>w{w=length($3)} END{print (w<8?8:w)+2}')
+    printf '  %-8s %-11s %-*s %s\n' STATUS REASON "$lw" WORKTREE "LAST COMMIT"
+    printf '%s' "$out" | sort -t$'\t' -k1,1 -k2,2 -k3,3 | awk -F'\t' -v w="$lw" '{printf "  %-8s %-11s %-*s %s\n",$1,"("$2")",w,$3,$4}'
+
+    local removable=$(printf '%s' "$out" | awk -F'\t' '$1=="remove"||$1=="prune"' | wc -l | tr -d ' ')
+    [ "$removable" = 0 ] && return 0
+    printf '\nProceed with %d removal(s)? [y/N] ' "$removable"
+    local reply=""; read -r reply
+    case "$reply" in y|Y|yes|YES) ;; *) echo aborted; return 0 ;; esac
+
+    printf '%s' "$out" | awk -F'\t' '$1=="remove"{print $5"\t"$6}' | while IFS=$'\t' read -r wt branch; do
+        if git worktree remove "$wt" >/dev/null 2>&1; then
+            [ -n "$branch" ] && git branch -D "$branch" >/dev/null 2>&1
+            echo "  removed: ${branch:-$wt}"
+        else
+            echo "  FAILED:  ${branch:-$wt}"
+        fi
+    done
+    [ "$any_stale" = 1 ] && git worktree prune >/dev/null 2>&1 && echo "  pruned stale entries"
 }
 
 eks_build_kubeconfigs() {

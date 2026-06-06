@@ -153,27 +153,29 @@ setup_claude_settings() {
   local out="$HOME/.claude/settings.json"
   [ -L "$out" ] && rm "$out"
   local union_keys='["permissions.allow","permissions.ask","permissions.additionalDirectories"]'
-  if [ -f "$overlay" ]; then
-    jq -n --slurpfile base "$base" --slurpfile overlay "$overlay" --argjson union "$union_keys" '
-      def path_of(s): s | split(".") | map(if test("^[0-9]+$") then tonumber else . end);
-      def deep_merge(a; b):
-        if (a | type) == "object" and (b | type) == "object" then
-          reduce ((a | keys_unsorted) + (b | keys_unsorted) | unique)[] as $k
-            ({}; .[$k] = (if (a | has($k)) and (b | has($k)) then deep_merge(a[$k]; b[$k]) elif (b | has($k)) then b[$k] else a[$k] end))
-        else b end;
-        $base[0] as $b | $overlay[0] as $o | deep_merge($b; $o) as $merged
-      | reduce $union[] as $key ($merged;
-          path_of($key) as $p
-        | ($b | getpath($p)? // []) as $ba
-        | ($o | getpath($p)? // []) as $ov
-        | if ($ba | type) == "array" or ($ov | type) == "array"
-            then setpath($p; (($ba + $ov) | unique))
-            else . end)
-    ' > "$out.tmp"
-    mv "$out.tmp" "$out"
-  else
-    cp "$base" "$out"
-  fi
+  local overlay_json='{}'
+  [ -f "$overlay" ] && overlay_json=$(cat "$overlay")
+  local injected
+  injected=$(jq -n --arg home "$HOME" '{permissions: {additionalDirectories: ["\($home)/.claude"]}}')
+  jq -n --slurpfile base "$base" --argjson overlay "$overlay_json" --argjson injected "$injected" --argjson union "$union_keys" '
+    def path_of(s): s | split(".") | map(if test("^[0-9]+$") then tonumber else . end);
+    def deep_merge(a; b):
+      if (a | type) == "object" and (b | type) == "object" then
+        reduce ((a | keys_unsorted) + (b | keys_unsorted) | unique)[] as $k
+          ({}; .[$k] = (if (a | has($k)) and (b | has($k)) then deep_merge(a[$k]; b[$k]) elif (b | has($k)) then b[$k] else a[$k] end))
+      else b end;
+      $base[0] as $b | $overlay as $o | $injected as $i
+    | deep_merge(deep_merge($b; $o); $i) as $merged
+    | reduce $union[] as $key ($merged;
+        path_of($key) as $p
+      | ($b | getpath($p)? // []) as $ba
+      | ($o | getpath($p)? // []) as $ov
+      | ($i | getpath($p)? // []) as $in
+      | if ($ba | type) == "array" or ($ov | type) == "array" or ($in | type) == "array"
+          then setpath($p; (($ba + $ov + $in) | unique))
+          else . end)
+  ' > "$out.tmp"
+  mv "$out.tmp" "$out"
 }
 
 setup_mise_tools() {
