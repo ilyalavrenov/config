@@ -4,6 +4,8 @@ fi
 
 export AWS_PAGER=""
 export BREW_PREFIX="/opt/homebrew"
+
+fpath=(${BREW_PREFIX}/share/zsh/functions $fpath)
 export EDITOR="cursor --wait"
 export PATH="${PATH}:${HOME}/go/bin"
 export WORDCHARS=""
@@ -41,14 +43,14 @@ bindkey "^[[1~" beginning-of-line
 bindkey "^[[4~" end-of-line
 
 sources=(
-    ${BREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    ${BREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     ${BREW_PREFIX}/share/powerlevel10k/powerlevel10k.zsh-theme
     ~/.p10k.zsh
     ~/.aliases
     ~/.localrc
     ~/.fzf.zsh
     ~/.config/op/plugins.sh
+    ${BREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+    ${BREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 )
 
 for file in ${sources[@]}; do
@@ -60,7 +62,7 @@ if type brew &>/dev/null; then
 fi
 
 autoload -Uz compinit
-compinit -C
+compinit -i
 
 if command -v kubectl &>/dev/null; then
     source <(kubectl completion zsh)
