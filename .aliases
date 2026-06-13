@@ -1,5 +1,5 @@
 alias afk='open -a ScreenSaverEngine'
-alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
+alias brewup='brew update; brew upgrade; brew cleanup -s --prune=all; brew doctor'
 alias copyssh='ssh-add -L | pbcopy'
 alias diff='git --no-pager diff --color=auto --no-ext-diff --no-index'
 alias flushdns='sudo killall -HUP mDNSResponder; sudo killall mDNSResponderHelper; sudo dscacheutil -flushcache; echo "local DNS cache has been flushed"'
