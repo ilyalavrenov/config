@@ -1,8 +1,56 @@
 {
+  "agentPushNotifEnabled": true,
   "attribution": {
     "commit": "",
     "pr": ""
   },
+  "effortLevel": "xhigh",
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": false,
+    "gopls-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": false,
+    "superpowers@claude-plugins-official": true
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Frog.aiff &"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Frog.aiff &"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Frog.aiff &"
+          }
+        ]
+      }
+    ]
+  },
+  "model": "claude-opus-4-8[1m]",
   "permissions": {
     "allow": [
       "Bash(awk:*)",
@@ -105,50 +153,5 @@
       "Bash(git worktree remove:*)"
     ]
   },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Frog.aiff &"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Frog.aiff &"
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Frog.aiff &"
-          }
-        ]
-      }
-    ]
-  },
-  "enabledPlugins": {
-    "claude-md-management@claude-plugins-official": false,
-    "frontend-design@claude-plugins-official": false,
-    "gopls-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": false,
-    "superpowers@claude-plugins-official": true
-  },
-  "effortLevel": "xhigh",
-  "model": "claude-opus-4-8[1m]",
-  "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "remoteControlAtStartup": true
 }
