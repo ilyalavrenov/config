@@ -15,3 +15,5 @@ venv
 *.tar.gz
 *.zip
 .env
+**/.claude/settings.local.json
+.worktrees/

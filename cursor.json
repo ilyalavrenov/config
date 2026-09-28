@@ -1,6 +1,22 @@
 {
   "[python]": {
-    "editor.formatOnType": true
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnType": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "claudeCode.allowDangerouslySkipPermissions": true,
   "claudeCode.preferredLocation": "panel",
@@ -12,7 +28,6 @@
   "go.toolsManagement.autoUpdate": true,
   "javascript.format.semicolons": "insert",
   "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
-  "python.formatting.provider": "black",
   "redhat.telemetry.enabled": false,
   "typescript.format.semicolons": "insert"
 }
