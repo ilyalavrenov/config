@@ -132,6 +132,7 @@ setup_symlinks() {
     ".p10k.zsh:.p10k.zsh"
     ".zshrc:.zshrc"
     "cursor.json:Library/Application Support/Cursor/User/settings.json"
+    "cursor.keybindings.json:Library/Application Support/Cursor/User/keybindings.json"
     "ghosttyconfig:Library/Application Support/com.mitchellh.ghostty/config"
     "mise.toml:.config/mise/config.toml"
   )
@@ -143,39 +144,6 @@ setup_symlinks() {
     mkdir -p "$HOME/$(dirname "$dst")"
     ln -sf "$PWD/$src" "$HOME/$dst"
   done
-}
-
-setup_claude_settings() {
-  log "setup: claude settings"
-  mkdir -p "$HOME/.claude"
-  local base="$PWD/claude-settings.json"
-  local overlay="$HOME/.claude/settings.local-overlay.json"
-  local out="$HOME/.claude/settings.json"
-  [ -L "$out" ] && rm "$out"
-  local union_keys='["permissions.allow","permissions.ask","permissions.additionalDirectories"]'
-  local overlay_json='{}'
-  [ -f "$overlay" ] && overlay_json=$(cat "$overlay")
-  local injected
-  injected=$(jq -n --arg home "$HOME" '{permissions: {additionalDirectories: ["\($home)/.claude"]}}')
-  jq -n --slurpfile base "$base" --argjson overlay "$overlay_json" --argjson injected "$injected" --argjson union "$union_keys" '
-    def path_of(s): s | split(".") | map(if test("^[0-9]+$") then tonumber else . end);
-    def deep_merge(a; b):
-      if (a | type) == "object" and (b | type) == "object" then
-        reduce ((a | keys_unsorted) + (b | keys_unsorted) | unique)[] as $k
-          ({}; .[$k] = (if (a | has($k)) and (b | has($k)) then deep_merge(a[$k]; b[$k]) elif (b | has($k)) then b[$k] else a[$k] end))
-      else b end;
-      $base[0] as $b | $overlay as $o | $injected as $i
-    | deep_merge(deep_merge($b; $o); $i) as $merged
-    | reduce $union[] as $key ($merged;
-        path_of($key) as $p
-      | ($b | getpath($p)? // []) as $ba
-      | ($o | getpath($p)? // []) as $ov
-      | ($i | getpath($p)? // []) as $in
-      | if ($ba | type) == "array" or ($ov | type) == "array" or ($in | type) == "array"
-          then setpath($p; (($ba + $ov + $in) | unique))
-          else . end)
-  ' > "$out.tmp"
-  mv "$out.tmp" "$out"
 }
 
 setup_mise_tools() {
@@ -292,7 +260,6 @@ main() {
   setup_homebrew
   setup_dock
   setup_symlinks
-  setup_claude_settings
   setup_mise_tools
   setup_fonts
   setup_git
