@@ -27,7 +27,6 @@
   "github.copilot.nextEditSuggestions.enabled": true,
   "go.toolsManagement.autoUpdate": true,
   "javascript.format.semicolons": "insert",
-  "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
   "redhat.telemetry.enabled": false,
   "typescript.format.semicolons": "insert"
 }
